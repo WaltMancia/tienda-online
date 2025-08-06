@@ -1,0 +1,50 @@
+# Versión de Docker Compose
+version: '3.8'
+
+# Definimos los servicios (contenedores) que necesitamos
+services:
+  # Servicio de Nginx (servidor web)
+  nginx:
+    image: nginx:stable-alpine
+    container_name: tienda-nginx
+    ports:
+      # Mapeamos el puerto 80 del host al 80 del contenedor
+      - "80:80"
+    volumes:
+      # Mapeamos el código de nuestra aplicación al contenedor
+      - ./src:/var/www/html
+      # Mapeamos nuestro archivo de configuración de Nginx
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    # Nginx depende del servicio 'app' (PHP)
+    depends_on:
+      - app
+
+  # Servicio de PHP-FPM
+  app:
+    # Usamos un Dockerfile para construir este servicio
+    build:
+      context: ./app
+    container_name: tienda-app
+    volumes:
+      # Mapeamos el código de nuestra aplicación al contenedor
+      - ./src:/var/www/html
+    # Depende del servicio 'db' (MySQL) para arrancar
+    depends_on:
+      - db
+
+  # Servicio de MySQL
+  db:
+    image: mysql:8.0
+    container_name: tienda-db
+    ports:
+      # Mapeamos el puerto 3306 del host al 3306 del contenedor
+      - "3306:3306"
+    environment:
+      # Variables de entorno para MySQL
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: tienda_online
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      # Mapeamos una carpeta para que los datos de la base de datos persistan
+      - ./db:/var/lib/mysql

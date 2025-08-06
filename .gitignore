@@ -1,0 +1,17 @@
+# Archivos y carpetas de Docker
+.env
+db/
+
+# Archivos de la base de datos local
+*.sql
+
+# Archivos de caché
+*.log
+
+# Archivos de entorno de PHP
+vendor/
+
+# Archivos de entorno de React
+node_modules/
+dist/
+build/
